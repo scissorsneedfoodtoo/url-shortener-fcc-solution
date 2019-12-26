@@ -10,6 +10,8 @@ const chaiHttp = require('chai-http');
 const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
+const dns = require('dns');
+const url = require('url'); 
 let testShortURL;
 
 chai.use(chaiHttp);
@@ -28,11 +30,17 @@ suite('Functional Tests', () => {
           .send({ url: testURL })
           .end((err, res) => {
             const { original_url, short_url } = res.body;
-            testShortURL = short_url; // Store number for later test
+            testShortURL = short_url.toString(); // Store short URL for later tests and convert to string if necessary
+
+            const parsedLookupUrl = url.parse(testShortURL);
 
             assert.strictEqual(original_url, testURL);
-            assert.typeOf(short_url, 'number');
-            done();
+
+            // Ensure returned short address is not a valid URL
+            dns.lookup(parsedLookupUrl.hostname,(err, address, family) => {
+              assert.isNull(address);
+              done();
+            });
           });
       });
 
