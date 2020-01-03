@@ -1,9 +1,8 @@
 /*
+*       
+*       To run the tests, open the terminal with [Ctrl + `] (backtick)
+*       and run the command `npm run test`
 *
-*
-*       FILL IN EACH FUNCTIONAL TEST BELOW COMPLETELY
-*       -----[Keep the tests in the same order!]-----
-*       (if additional are added, keep them at the very end!)
 */
 
 const chaiHttp = require('chai-http');
@@ -79,8 +78,9 @@ suite('Functional Tests', () => {
       });
 
       test('Returns expected error message if short URL is not found', done => {
-        const max = 9999999999;
-        const min = 9000000000;
+        // Generate high number that's unlikely to be taken
+        const max = 99999999999;
+        const min = 90000000000;
         const randomHighNumber = Math.floor(Math.random() * (max - min) + min);
 
         chai.request(server)
