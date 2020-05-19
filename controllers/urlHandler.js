@@ -4,11 +4,9 @@ const Counters = require('../models/counters.js');
 const UrlEntries = require('../models/urlEntries.js');
 const dns = require('dns');
 
-
-
 function getCountAndIncrease (req, res, callback) {
   Counters
-    .findOneAndUpdate({}, {$inc:{'count': 1}},function(err, data) {
+    .findOneAndUpdate({}, {$inc:{'count': 1}}, (err, data) => {
       if (err) return;
       if (data) {
         callback(data.count);
@@ -18,7 +16,7 @@ function getCountAndIncrease (req, res, callback) {
           .save(function(err) {
             if (err) return;
             Counters
-              .findOneAndUpdate({}, {$inc:{'count': 1}},function(err, data) {
+              .findOneAndUpdate({}, {$inc:{'count': 1}}, (err, data) => {
                 if (err) return;
                 callback(data.count);
               });
@@ -26,8 +24,6 @@ function getCountAndIncrease (req, res, callback) {
       }
     });
 }
-
-
 
 // Search for '://', store protocol and hostname+path
 const protocolRegExp = /^https?:\/\/(.*)/i;
@@ -56,18 +52,18 @@ exports.addUrl = function (req, res) {
     const hostnameMatch = hostAndQuery.match(hostnameRegExp);
     if (hostnameMatch) {
       // the URL has a valid www.whaterver.com[/something-optional] format
-      dns.lookup(hostnameMatch[0], function(err) {
+      dns.lookup(hostnameMatch[0], (err) => {
         if(err) {
           // no DNS match, invalid Hostname, the URL won't be stored
-          res.json({"error": "Invalid Hostname"});
+          res.json({ "error": "Invalid Hostname" });
         } else {
           // URL is OK, check if it's already stored
           UrlEntries
-            .findOne({"url": url}, function(err, storedUrl) {
+            .findOne({"url": url}, (err, storedUrl) => {
               if (err) return;
               if (storedUrl) {
                 // URL is already in the DB, return the matched one
-                res.json({"original_url": url, "short_url": storedUrl.index});
+                res.json({ "original_url": url, "short_url": storedUrl.index });
               } else {
                 // Increase Counter and store the new URL,
                 getCountAndIncrease(req, res, function(cnt) {
@@ -79,7 +75,7 @@ exports.addUrl = function (req, res) {
                   newUrlEntry
                   .save(function(err) {
                     if (err) return;
-                    res.json({"original_url": url, "short_url": cnt});
+                    res.json({ "original_url": url, "short_url": cnt });
                   });
                 });
               }
@@ -88,7 +84,7 @@ exports.addUrl = function (req, res) {
         });
       } else {
         // the URL has not a www.whatever.com format
-        res.json({"error": "Invalid URL"});
+        res.json({ "error": "Invalid URL" });
       }
     };
 
@@ -96,17 +92,17 @@ exports.processShortUrl = function (req, res) {
     const shurl = req.params.shurl;
     if (!parseInt(shurl,10)) {
       // The short URL identifier is not a number
-      res.json({"error": "Wrong format"});
+      res.json({ "error": "Wrong format" });
       return;
     }
     UrlEntries
-      .findOne({"index": shurl}, function (err, data) {
+      .findOne({ "index": shurl }, (err, data) => {
         if (err) return;
         if (data){
           // redirect to the stored page
           res.redirect(data.url);
         } else {
-          res.json({"error": "No short URL found for the given input"});
+          res.json({ "error": "No short URL found for the given input" });
         }
       });
   };

@@ -8,4 +8,4 @@ const UrlEntries = new Schema ({
   index : {type: Number, required: true}
 });
 
-module.exports = mongoose.model('UrlEntries', UrlEntries);
+module.exports = mongoose.model('UrlEntries', UrlEntries, 'url_entries');

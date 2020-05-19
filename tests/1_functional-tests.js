@@ -15,11 +15,12 @@ let testShortURL;
 
 chai.use(chaiHttp);
 
-suite('Functional Tests', () => {
+suite('Functional Tests', function() {
+  this.timeout(5000);
 
-  suite('Routing Tests', () => {
+  suite('Routing Tests', function() {
     
-    suite('POST /api/shorturl/new/ => shortened URL JSON', () => {
+    suite('POST /api/shorturl/new/ => shortened URL JSON', function() {
       
       test('Returns a shortened URL in the JSON response', done => {
         const testURL = 'https://www.google.com';
@@ -36,14 +37,14 @@ suite('Functional Tests', () => {
             assert.strictEqual(original_url, testURL);
 
             // Ensure returned short address is not a valid URL
-            dns.lookup(parsedLookupUrl.hostname,(err, address, family) => {
-              assert.isNull(address);
+            dns.lookup(String(parsedLookupUrl.hostname), (err, address, family) => {
+              assert.isUndefined(address);
               done();
             });
           });
       });
 
-      test('Returns expected error message for an invalid URL', done => {
+      test('Returns expected error message for an invalid URL', function(done) {
         const testBadURL = 'https://wwwwdotgoogledotcom';
 
         chai.request(server)
@@ -57,9 +58,9 @@ suite('Functional Tests', () => {
       
     });
 
-    suite('GET /api/shorturl/[number] => shortened URL JSON', () => {
+    suite('GET /api/shorturl/[number] => shortened URL JSON', function() {
       
-      test('Redirects a previously shortened URL', done => {
+      test('Redirects a previously shortened URL', function(done) {
         chai.request(server)
           .get(`/api/shorturl/${testShortURL}`)
           .end((err, res) => {
@@ -68,7 +69,7 @@ suite('Functional Tests', () => {
           });
       });
 
-      test('Returns expected error message if short URL is not a number', done => {
+      test('Returns expected error message if short URL is not a number', function(done) {
         chai.request(server)
           .get(`/api/shorturl/test123`)
           .end((err, res) => {
@@ -77,7 +78,7 @@ suite('Functional Tests', () => {
           });
       });
 
-      test('Returns expected error message if short URL is not found', done => {
+      test('Returns expected error message if short URL is not found', function(done) {
         // Generate high number that's unlikely to be taken
         const max = 99999999999;
         const min = 90000000000;

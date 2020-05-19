@@ -11,6 +11,7 @@ const app = express();
 const mongoURL = process.env.DB_URI;
 
 mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
 mongoose.connect(mongoURL, { useNewUrlParser: true });
 
 app.use(bodyParser.urlencoded({'extended': false}));
